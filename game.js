@@ -36,7 +36,9 @@ class Basic extends Enemy {
     }
 
     collide(i) {
-        this.lives -= 1
+        if (this.lives > 0) {
+            this.lives -= 1
+        }
         if (this.lives < 0) {
             this.x = -100000
         }
@@ -86,8 +88,10 @@ class Boss extends Enemy {
     }
 
     collide(i) {
-        this.lives -= 1
-        if (this.lives < 0) {
+        if (this.lives > 0) {
+            this.lives -= 1
+        }
+        if (this.lives <= 0) {
             this.x = -100000
         }
     }
@@ -169,9 +173,11 @@ class Player extends FrameUpdatableWithImage {
     }
 
     collide() {
-        this.lives -= 1
-        if (this.lives < 0) {
-            this.x = -1000
+        if (this.lives > 0) {
+            this.lives -= 1
+        }
+        if (this.lives <= 0) {
+            this.x = 100000
         }
     }
 
@@ -270,6 +276,8 @@ let keyLeft = false
 let keyRight = false
 let keySpace = false
 
+let isPlaying = false
+
 // function getCurrentDir() {
 //     if (keyUp) {
 //         return "w"
@@ -344,59 +352,78 @@ function nextWave() {
 }
 
 function FrameUpdate() {
-    context.clearRect(0, 0, canvas.width, canvas.height)
+    if (isPlaying) {
+        context.clearRect(0, 0, canvas.width, canvas.height)
 
-    context.drawImage(space, 0, 0, space.width, space.height, 0, 0, canvas.height, canvas.height);
-    context.drawImage(space, 0, 0, space.width, space.height, 1000, 0, canvas.height, canvas.height);
+        context.drawImage(space, 0, 0, space.width, space.height, 0, 0, canvas.height, canvas.height);
+        context.drawImage(space, 0, 0, space.width, space.height, 1000, 0, canvas.height, canvas.height);
 
-    // Draw all entities
-    entities.forEach((entity) => {
-        entity.updateFrame()
-        context.drawImage(entity.image, 0, 0, entity.image.width, entity.image.height, entity.x, entity.y, canvas.height / 20, canvas.height / 20);
-    })
-
-    context.font = "50px arial"
-    context.fillStyle = "white"
-    context.fillText(player.lives.toString(), 30, 90)
-    context.stroke()
-
-    bullets.forEach((bullet) => {
-        if (bullet.byPlayer) {
-            enemies.forEach((enemy, i) => {
-                if (enemy.y < bullet.y && enemy.y + canvas.height * 0.06 > bullet.y && enemy.x < bullet.x && enemy.x + canvas.width * 0.06 > bullet.x) {
-                    console.log(123)
-                    bullet.x = -100000
-                    enemy.collide(i)
-                }
-            })
-        } else {
-            if (player.y < bullet.y && player.y + canvas.height * 0.05 > bullet.y && player.x < bullet.x && player.x + canvas.width * 0.05 > bullet.x) {
-                console.log(321)
-                bullet.x = -100000
-                player.collide()
-            }
-        }
-    })
-
-    let shouldStartNewWave = true
-
-    enemies.forEach((enemy) => {
-        shouldStartNewWave = shouldStartNewWave && enemy.x < 0
-    })
-
-    if (shouldStartNewWave) {
-        nextWave()
-    }
-
-    if (player.lives === 0) {
-        entities.forEach((ent, i) => {
-            entities[i].x = -100000
-
-            context.font = "50px arial"
-            context.fillStyle = "white"
-            context.fillText("YOU DIED", canvas.width / 2, canvas.height / 2)
-            context.stroke()
+        // Draw all entities
+        entities.forEach((entity) => {
+            entity.updateFrame()
+            context.drawImage(entity.image, 0, 0, entity.image.width, entity.image.height, entity.x, entity.y, canvas.height / 20, canvas.height / 20);
         })
+
+        context.font = "50px arial"
+        context.fillStyle = "white"
+        context.fillText(player.lives.toString(), 30, 90)
+        context.stroke()
+
+        bullets.forEach((bullet) => {
+            if (bullet.byPlayer) {
+                enemies.forEach((enemy, i) => {
+                    if (enemy.y < bullet.y && enemy.y + canvas.height * 0.06 > bullet.y && enemy.x < bullet.x && enemy.x + canvas.width * 0.06 > bullet.x) {
+                        console.log(123)
+                        bullet.x = -100000
+                        enemy.collide(i)
+                    }
+                })
+            } else {
+                if (player.y < bullet.y && player.y + canvas.height * 0.05 > bullet.y && player.x < bullet.x && player.x + canvas.width * 0.05 > bullet.x) {
+                    console.log(321)
+                    bullet.x = -100000
+                    player.collide()
+                }
+            }
+        })
+
+        let shouldStartNewWave = true
+
+        enemies.forEach((enemy) => {
+            shouldStartNewWave = shouldStartNewWave && enemy.x < 0
+        })
+
+        if (shouldStartNewWave) {
+            nextWave()
+        }
+
+        if (player.lives <= 0) {
+            entities.forEach((ent, i) => {
+                entities[i].x = -100000
+
+                context.font = "50px arial"
+                context.fillStyle = "white"
+                context.fillText("YOU DIED", canvas.width / 2, canvas.height / 2)
+                context.stroke()
+            })
+        }
+    } else {
+        context.font = "50px arial"
+        context.fillStyle = "black"
+        context.fillText("Press any key", canvas.width / 2, canvas.height / 2)
+        context.stroke()
+        if (keyUp) {
+            isPlaying = true
+        }
+        if (keyDown) {
+            isPlaying = true
+        }
+        if (keyLeft) {
+            isPlaying = true
+        }
+        if (keyRight) {
+            isPlaying = true
+        }
     }
 }
 
