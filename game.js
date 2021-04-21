@@ -400,6 +400,12 @@ function FrameUpdate() {
     }
 }
 
+function ResizeWindow() {
+    canvas = document.getElementById("main")
+    canvas.width = document.getElementsByTagName("body")[0].clientWidth;
+    canvas.height = document.getElementsByTagName("body")[0].clientHeight;
+}
+
 window.onload = () => {
     context.font = "50px arial"
     context.textAlign = "center"
