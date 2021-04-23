@@ -39,7 +39,7 @@ class Basic extends Enemy {
         if (this.lives > 0) {
             this.lives -= 1
         }
-        if (this.lives < 0) {
+        if (this.lives <= 0) {
             this.x = -100000
         }
     }
